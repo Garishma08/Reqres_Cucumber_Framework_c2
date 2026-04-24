@@ -1,0 +1,12 @@
+target/
+*.log
+*.class
+*.jar
+.metadata/
+.project
+.classpath
+.settings/
+.idea/
+.vscode/
+test-output/
+~$*.xlsx
