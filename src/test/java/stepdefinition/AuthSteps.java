@@ -1,4 +1,4 @@
-package stepdefinitions.Auth;
+package stepdefinition;
 
 import base.Baseclass;
 import endpoints.Endpoints;
@@ -19,12 +19,10 @@ public class AuthSteps extends Baseclass {
     String expectedEmail;
     String expectedPassword;
 
-
     @Given("the user API is initialized")
     public void initAPI() {
         setup();
     }
-
 
     @Given("I set auth endpoint for register")
     public void setRegister() {
@@ -45,7 +43,6 @@ public class AuthSteps extends Baseclass {
     public void setColorsPage(String page) {
         endpoint = Endpoints.LIST_COLORS + "?page=" + page;
     }
-
 
     @Given("I prepare valid auth request body")
     public void validRegisterBody() {
@@ -113,13 +110,12 @@ public class AuthSteps extends Baseclass {
         requestBody = obj.toString();
     }
 
-
     @Given("I prepare auth request body from excel sheet {string} row {int}")
     public void excelData(String sheet, int row) {
 
         ExcelUtility excel = new ExcelUtility();
 
-        expectedEmail = excel.getCellData(sheet, row, "email");
+        String name = excel.getCellData(sheet, row, "email");
         expectedPassword = excel.getCellData(sheet, row, "password");
 
         requestBody = new JSONObject()
@@ -127,7 +123,6 @@ public class AuthSteps extends Baseclass {
                 .put("password", expectedPassword)
                 .toString();
     }
-
 
     @When("I send POST request for auth using below data")
     public void datatable(DataTable table) {
@@ -144,7 +139,6 @@ public class AuthSteps extends Baseclass {
         }
     }
 
-
     @When("I send a POST request for auth")
     public void postRequest() {
         response = request.body(requestBody).request(Method.POST, endpoint);
@@ -155,13 +149,11 @@ public class AuthSteps extends Baseclass {
         response = request.request(Method.GET, endpoint);
     }
 
-
     @Then("the API should return status code {int} with status message {string} for auth")
     public void validateStatus(Integer code, String msg) {
 
         assertEquals(response.getStatusCode(), code);
         assertTrue(response.getStatusLine().contains(msg));
-
 
         if (code == 200) {
             assertTrue(response.asString().contains("token") || response.asString().contains("data"));
@@ -171,7 +163,6 @@ public class AuthSteps extends Baseclass {
             assertTrue(response.asString().contains("error"));
         }
     }
-
 
     @Then("the response time should be less than {int} ms for auth")
     public void timeCheck(int time) {
@@ -193,7 +184,6 @@ public class AuthSteps extends Baseclass {
         assertTrue(response.getHeader("Content-Type").contains("application/json"));
     }
 
-
     @Then("the auth response should match excel sheet {string} row {int}")
     public void excelValidation(String sheet, int row) {
 
@@ -204,7 +194,6 @@ public class AuthSteps extends Baseclass {
         assertNotNull(response.jsonPath().get("id"));
         assertNotNull(response.jsonPath().get("token"));
     }
-
 
     @Given("I set invalid API key in header")
     public void invalidKey() {
