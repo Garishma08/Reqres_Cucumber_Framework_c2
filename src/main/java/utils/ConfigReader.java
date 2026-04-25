@@ -11,8 +11,7 @@ public class ConfigReader {
 
     public static void loadConfig() {
         try {
-            FileInputStream fis =
-                    new FileInputStream("src/test/resources/config.properties");
+            FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
 
             prop = new Properties();
             prop.load(fis);
@@ -41,19 +40,4 @@ public class ConfigReader {
         return getProperty("excel_path");
     }
 
-    public static String getGetCollections() {
-        return Endpoints.GET_COLLECTIONS;
-    }
-
-    public static String getCreateCollection() {
-        return Endpoints.CREATE_COLLECTION;
-    }
-
-    public static String getGetCollectionBySlug() {
-        return Endpoints.GET_COLLECTION_BY_SLUG;
-    }
-
-    public static String getUpdateCollection() {
-        return Endpoints.UPDATE_COLLECTION;
-    }
 }
