@@ -16,14 +16,12 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
     private String endpoint;
     private String requestBody;
 
-    // ================= INIT =================
     @Given("the update and delete user API is initialized")
     public void initialize_api() {
         setup();
         request = request.contentType(ContentType.JSON);
     }
 
-    // ================= ENDPOINT =================
     @Given("I set update user endpoint from excel sheet {string} row {int}")
     public void set_endpoint_from_excel(String sheet, int row) {
         String userId = ExcelUtility.getCellData(sheet, row, "user_id");
@@ -37,7 +35,7 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
     }
 
     @Given("I set update user endpoint with valid id")
-    public void set_update_valid() {
+    public void set_update_valid_static() {
         String userId = ExcelUtility.getCellData("data", 1, "user_id");
         endpoint = Endpoints.UPDATE_USER + userId;
     }
@@ -57,9 +55,8 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
         endpoint = Endpoints.UPDATE_USER;
     }
 
-    // ================= DELETE =================
     @Given("I set delete user endpoint with valid id")
-    public void set_delete_valid() {
+    public void set_delete_valid_static() {
         String userId = ExcelUtility.getCellData("data", 1, "user_id");
         endpoint = Endpoints.DELETE_USER + userId;
     }
@@ -74,7 +71,6 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
         endpoint = Endpoints.DELETE_USER;
     }
 
-    // ================= REQUEST BODY =================
     @Given("I prepare update user request body from excel sheet {string} row {int}")
     public void prepare_body_from_excel(String sheet, int row) {
         String name = ExcelUtility.getCellData(sheet, row, "name");
@@ -97,7 +93,7 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
     }
 
     @Given("I prepare partial update user request body")
-    public void prepare_partial_body() {
+    public void prepare_partial_update_user_request_body() {
         requestBody = "{ \"job\": \"QA Lead\" }";
         request.body(requestBody);
     }
@@ -114,13 +110,11 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
         request.body(requestBody);
     }
 
-    // ================= API KEY =================
     @Given("I set invalid API key")
     public void set_invalid_api_key() {
         request.header("x-api-key", "invalid_key");
     }
 
-    // ================= REQUEST =================
     @When("I send a PUT request for update user")
     public void send_put_request() {
         response = request.when().put(endpoint);
@@ -145,8 +139,8 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
 
         for (Map<String, String> row : data) {
             String userId = row.get("userId");
-            String name = row.get("name");
-            String job = row.get("job");
+            String name   = row.get("name");
+            String job    = row.get("job");
 
             String body = "{ \"name\": \"" + name + "\", \"job\": \"" + job + "\" }";
 
@@ -159,7 +153,6 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
         }
     }
 
-    // ================= VALIDATION =================
     @Then("the API should return status code {int} for update user")
     public void validate_status_update(int code) {
         Assert.assertEquals(response.getStatusCode(), code);
@@ -171,8 +164,20 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
     }
 
     @Then("the response body should be valid JSON for update user")
-    public void validate_json() {
+    public void validate_json_update() {
         Assert.assertNotNull(response.jsonPath());
+    }
+
+    @Then("the response body should be valid JSON for patch user")
+    public void validate_json_patch() {
+        Assert.assertNotNull(response.jsonPath());
+    }
+
+    @Then("the response body should be valid JSON for delete user")
+    public void validate_json_delete() {
+        if (response.getStatusCode() != 204) {
+            Assert.assertNotNull(response.jsonPath());
+        }
     }
 
     @Then("the response should contain field {string} for update user")
@@ -180,14 +185,25 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
         Assert.assertTrue(response.getBody().asString().contains(field));
     }
 
-    // ✅ THIS IS THE FIX (missing step)
     @Then("the response should contain field {string}")
     public void validate_field_generic(String field) {
         Assert.assertTrue(response.getBody().asString().contains(field));
     }
 
     @Then("validate response headers for update user")
-    public void validate_headers() {
+    public void validate_headers_update() {
         Assert.assertTrue(response.getHeader("Content-Type").contains("application/json"));
+    }
+
+    @Then("validate response headers for patch user")
+    public void validate_headers_patch() {
+        Assert.assertTrue(response.getHeader("Content-Type").contains("application/json"));
+    }
+
+    @Then("validate response headers for delete user")
+    public void validate_headers_delete() {
+        if (response.getHeader("Content-Type") != null) {
+            Assert.assertTrue(response.getHeader("Content-Type").contains("application/json"));
+        }
     }
 }
