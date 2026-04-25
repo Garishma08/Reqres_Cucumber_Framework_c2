@@ -8,19 +8,26 @@ import io.restassured.RestAssured;
 import org.testng.Assert;
 import utils.ConfigReader;
 import utils.ExcelUtility;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.lessThan;
+
 public class Users_createget_stepdefinition extends Baseclass {
 
     private Map<String, Object> requestBody;
-    private String currentSheet;
-    private int currentRow;
 
     @Given("the user API is initialized")
     public void initAPI() {
-        Assert.assertNotNull(request, "Request not initialized. Check Hooks.");
+        request = RestAssured
+                .given()
+                .baseUri(ConfigReader.getBaseUrl())
+                .header("x-api-key", ConfigReader.getApiKey())
+                .header("Content-Type", "application/json");
+
+        Assert.assertNotNull(request, "Request not initialized");
     }
 
     @Given("I set user endpoint for create user")
@@ -40,12 +47,12 @@ public class Users_createget_stepdefinition extends Baseclass {
 
     @Given("I set user endpoint with valid id")
     public void setValidUserId() {
-        endpoint = Endpoints.GET_USER_BY_ID + "2";
+        endpoint = Endpoints.GET_USER_BY_ID + ConfigReader.getUserId();
     }
 
     @Given("I set user endpoint with invalid id")
     public void setInvalidUserId() {
-        endpoint = Endpoints.INVALID_USERS;
+        endpoint = Endpoints.GET_USER_BY_ID + "9999";
     }
 
     @Given("I set user endpoint with user id {string}")
@@ -53,18 +60,25 @@ public class Users_createget_stepdefinition extends Baseclass {
         endpoint = Endpoints.GET_USER_BY_ID + id;
     }
 
+    @Given("I prepare valid user request body")
+    public void prepareValidUserBody() {
+        requestBody = new HashMap<>();
+        requestBody.put("name", "morpheus");
+        requestBody.put("job", "leader");
+    }
+
     @Given("I prepare create user request body from excel sheet {string} row {int}")
     public void prepareBodyFromExcel(String sheetName, Integer rowIndex) {
-
-        this.currentSheet = sheetName;
-        this.currentRow = rowIndex;
-
-        String name = ExcelUtility.getCellData("data", rowIndex, "name");
-        String job = ExcelUtility.getCellData("data", rowIndex, "job");
+        String name = ExcelUtility.getCellData(sheetName, rowIndex, "name");
+        String job = ExcelUtility.getCellData(sheetName, rowIndex, "job");
 
         requestBody = new HashMap<>();
         requestBody.put("name", name);
         requestBody.put("job", job);
+
+        System.out.println("EXCEL NAME: " + name);
+        System.out.println("EXCEL JOB: " + job);
+        System.out.println("REQUEST BODY: " + requestBody);
     }
 
     @Given("I prepare empty user request body")
@@ -78,7 +92,7 @@ public class Users_createget_stepdefinition extends Baseclass {
         requestBody.put("name", name);
     }
 
-    @Given("I set invalid API key in header")
+    @Given("I set invalid API key in header for user")
     public void setInvalidApiKey() {
         request = RestAssured
                 .given()
@@ -97,69 +111,78 @@ public class Users_createget_stepdefinition extends Baseclass {
 
     @When("I send a POST request for user")
     public void sendPostRequest() {
-        response = request
-                .body(requestBody)
-                .post(endpoint);
-
-        System.out.println("RESPONSE:\n" + response.asPrettyString());
+        response = request.body(requestBody).post(endpoint);
+        printResponse();
     }
 
     @When("I send a GET request for user")
     public void sendGetRequest() {
         response = request.get(endpoint);
+        printResponse();
+    }
+
+    @When("I send a GET request for user by id")
+    public void sendGetRequestById() {
+        response = request.get(endpoint);
+        printResponse();
     }
 
     @When("I send POST request to create users using below data")
-    public void createMultipleUsers(DataTable table) {
+    public void sendPostRequestWithDataTable(DataTable dataTable) {
+        List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
 
-        List<Map<String, String>> users = table.asMaps(String.class, String.class);
-
-        for (Map<String, String> user : users) {
-
+        for (Map<String, String> user : data) {
             requestBody = new HashMap<>();
             requestBody.put("name", user.get("name"));
             requestBody.put("job", user.get("job"));
 
             response = request.body(requestBody).post(endpoint);
 
+            System.out.println("DATATABLE REQUEST BODY: " + requestBody);
+            printResponse();
+
             Assert.assertEquals(response.getStatusCode(), 201);
+            Assert.assertEquals(getStatusMessage(), "Created");
         }
     }
 
     @Then("the API should return status code {int} with status message {string} for user")
     public void validateStatus(int code, String message) {
-
         Assert.assertEquals(response.getStatusCode(), code);
-        Assert.assertTrue(response.getStatusLine().contains(message));
+        Assert.assertEquals(getStatusMessage(), message);
     }
 
-    @Then("the API should return status code should be handled as per API behavior for user")
-    public void validateFlexibleStatus() {
-        int code = response.getStatusCode();
-        Assert.assertTrue(code >= 200 && code < 500);
+    @Then("the API should return status code should be {int} for user")
+    public void validateOnlyStatusCode(int code) {
+        Assert.assertEquals(response.getStatusCode(), code);
+    }
+
+    @Then("the API should return status code should be {int} Unauthorized for user")
+    public void validateUnauthorized(int code) {
+        Assert.assertEquals(response.getStatusCode(), code);
+        Assert.assertEquals(getStatusMessage(), "Unauthorized");
+    }
+
+    @Then("the response should contain field {string} for user")
+    public void validateFieldPresent(String field) {
+        Assert.assertNotNull(response.jsonPath().get(field));
     }
 
     @Then("the user response should match excel sheet {string} row {int}")
-    public void validateResponseWithExcel(String sheet, Integer row) {
-
-        String expectedName = ExcelUtility.getCellData("data", row, "name");
-        String expectedJob = ExcelUtility.getCellData("data", row, "job");
+    public void validateResponseWithExcel(String sheetName, Integer rowIndex) {
+        String expectedName = ExcelUtility.getCellData("data", rowIndex, "name");
+        String expectedJob = ExcelUtility.getCellData("data", rowIndex, "job");
 
         String actualName = response.jsonPath().getString("name");
         String actualJob = response.jsonPath().getString("job");
 
-        Assert.assertEquals(actualName, expectedName, "Name mismatch");
-        Assert.assertEquals(actualJob, expectedJob, "Job mismatch");
+        Assert.assertEquals(actualName, expectedName);
+        Assert.assertEquals(actualJob, expectedJob);
     }
 
     @Then("the response body should be valid JSON for user")
     public void validateJson() {
-        Assert.assertTrue(response.getContentType().contains("application/json"));
-    }
-
-    @Then("the response should contain field {string} for user")
-    public void validateField(String field) {
-        Assert.assertNotNull(response.jsonPath().get(field));
+        Assert.assertEquals(response.getContentType(), "application/json; charset=utf-8");
     }
 
     @Then("validate response headers for user")
@@ -168,7 +191,28 @@ public class Users_createget_stepdefinition extends Baseclass {
     }
 
     @Then("the response time should be less than {int} ms for user")
-    public void validateTime(int ms) {
-        Assert.assertTrue(response.getTime() < ms);
+    public void validateTime(long time) {
+        response.then().time(lessThan(time));
     }
-}
+
+    private String getStatusMessage() {
+        return response.getStatusLine().replace("HTTP/1.1 " + response.getStatusCode(), "").trim();
+    }
+
+    private void printResponse() {
+        System.out.println("STATUS CODE: " + response.getStatusCode());
+        System.out.println("STATUS LINE: " + response.getStatusLine());
+        System.out.println("RESPONSE TIME: " + response.getTime() + " ms");
+        System.out.println("RESPONSE BODY:");
+        System.out.println(response.asPrettyString());
+    }
+
+    @Then("the API should return status code should be handled as per API behavior for user")
+    public void validateFlexibleStatus() {
+        int code = response.getStatusCode();
+
+        Assert.assertNotEquals(c
+        
+
+        
+    }
