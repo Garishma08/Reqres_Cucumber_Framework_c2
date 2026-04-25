@@ -2,20 +2,14 @@ package endpoints;
 
 public class Endpoints {
 
-    
     public static final String CREATE_USER = "/api/users";
     public static final String GET_USERS = "/api/users?page=1";
     public static final String GET_USERS_BY_PAGE = "/api/users?page=";
     public static final String GET_USER_BY_ID = "/api/users/";
-<<<<<<< HEAD
-    public static final String INVALID_USERS = "/api/userz";
-
-=======
     public static final String INVALID_USERS = "/api/users/999";
 
     public static final String GET_COLLECTIONS = "/api/collections";
     public static final String CREATE_COLLECTION = "/api/collections";
     public static final String GET_COLLECTION_BY_SLUG = "/api/collections/";
     public static final String UPDATE_COLLECTION = "/api/collections/";
->>>>>>> origin/collections
 }
