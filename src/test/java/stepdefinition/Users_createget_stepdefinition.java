@@ -206,13 +206,5 @@ public class Users_createget_stepdefinition extends Baseclass {
         System.out.println("RESPONSE BODY:");
         System.out.println(response.asPrettyString());
     }
-
-    @Then("the API should return status code should be handled as per API behavior for user")
-    public void validateFlexibleStatus() {
-        int code = response.getStatusCode();
-
-        Assert.assertNotEquals(c
-        
-
-        
-    }
+    
+}
