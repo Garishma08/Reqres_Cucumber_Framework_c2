@@ -2,7 +2,7 @@
 Feature: Auth Register and Login Management in ReqRes API
 
   Background:
-    Given the user API is initialized
+    Given the Auth API is initialized
 
   @positive @excel @auth @TC_Auth_Excel
   Scenario Outline: Register user using Excel data
@@ -75,7 +75,7 @@ Feature: Auth Register and Login Management in ReqRes API
   Scenario: TC_Auth_05 - Register with invalid API key
     Given I set auth endpoint for register
     And I prepare valid auth request body
-    And I set invalid API key in header
+    And I set invalid API key in header for auth
     When I send a POST request for auth
     Then the API should return status code should be handled as per API behavior for auth
     And the response time should be less than 2000 ms for auth
@@ -161,14 +161,14 @@ Feature: Auth Register and Login Management in ReqRes API
   Scenario: TC_Auth_14 - Login with invalid API key
     Given I set auth endpoint for login
     And I prepare valid login request body
-    And I set invalid API key in header
+    And I set invalid API key in header for auth
     When I send a POST request for auth
     Then the API should return status code should be handled as per API behavior for auth
     And the response should contain field "error" for auth
     And the response time should be less than 2000 ms for auth
     And validate response headers for auth
 
-# ================= EXTRA SCENARIO OUTLINES (ADDED) =================
+
 
   @auth @extra
   Scenario Outline: Extra Register Validation
