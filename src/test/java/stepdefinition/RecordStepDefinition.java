@@ -28,9 +28,9 @@ public class RecordStepDefinition extends Baseclass {
             create_and_store_id();
         }
     }
-    // ================= BACKGROUND =================
 
-    @Given("the record management API is initialized")
+
+    @Given("the API is initialized")
     public void init_api() {
 
         RestAssured.baseURI = ConfigReader.getBaseUrl();
@@ -41,13 +41,11 @@ public class RecordStepDefinition extends Baseclass {
                 .header("x-api-key", ConfigReader.getApiKey());
     }
 
-    // ================= COMMON =================
 
     private void loadSlug() {
         currentSlug = ExcelUtility.getCellData("data", 1, "col_slug");
     }
 
-    // ================= CREATE =================
 
     @Given("I set create record endpoint from excel sheet {string} row {int}")
     public void set_create_endpoint_excel(String sheet, Integer row) {
@@ -100,7 +98,6 @@ public class RecordStepDefinition extends Baseclass {
         printResponse();
     }
 
-    // ================= GET ALL =================
 
     @Given("I set get records endpoint")
     public void set_get_all() {
@@ -124,7 +121,6 @@ public class RecordStepDefinition extends Baseclass {
         printResponse();
     }
 
-    // ================= GET SINGLE =================
 
     @Given("I create a record and store its id")
     public void create_and_store_id() {
@@ -184,7 +180,6 @@ public class RecordStepDefinition extends Baseclass {
         printResponse();
     }
 
-    // ================= UPDATE =================
 
     @Given("I set update record endpoint from excel sheet {string} row {int}")
     public void set_update_excel(String sheet, Integer row) {
@@ -263,8 +258,6 @@ public class RecordStepDefinition extends Baseclass {
         printResponse();
     }
 
-    // ================= PATCH =================
-
     @Given("I prepare partial record request body")
     public void partial_body() {
 
@@ -279,8 +272,6 @@ public class RecordStepDefinition extends Baseclass {
         response = request.patch(endpoint);
         printResponse();
     }
-
- // ================= DELETE =================
 
     @Given("I set delete record endpoint with valid id")
     public void delete_valid() {
@@ -323,7 +314,7 @@ public class RecordStepDefinition extends Baseclass {
 
         String slug = ExcelUtility.getCellData(sheet, row, "col_slug");
 
-        endpoint = "/api/collections/" + slug;
+        endpoint = Endpoints.DELETE_COLLECTION+ slug;
     }
     
     @When("I send a DELETE request for collection")
@@ -331,7 +322,6 @@ public class RecordStepDefinition extends Baseclass {
         response = request.delete(endpoint);
         printResponse();
     }
-    // ================= DATATABLE =================
 
     @When("I send POST request for record using below data")
     public void datatable_post(DataTable table) {
@@ -354,7 +344,6 @@ public class RecordStepDefinition extends Baseclass {
         }
     }
 
-    // ================= VALIDATIONS =================
 
     @Then("the API should return status code {int} for record")
     public void validate_status(int code) {
@@ -387,7 +376,6 @@ public class RecordStepDefinition extends Baseclass {
     public void validate_collection_status(int code) {
         response.then().statusCode(code);
     }
-    // ================= LOGGER =================
 
     private void printResponse() {
         System.out.println("STATUS CODE: " + response.getStatusCode());
