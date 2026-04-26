@@ -48,7 +48,7 @@ Examples:
     And the response body should be valid JSON for user
 
   @negative @defect @TC_Users_16
-Scenario: DEFECT - Create user with empty request body should return 400 but returns 201
+Scenario: DEFECT - Create user with empty request body should return 400
   Given I set user endpoint for create user
   And I prepare empty user request body
   When I send a POST request for user
@@ -82,21 +82,21 @@ Scenario: DEFECT - Create user with empty request body should return 400 but ret
     And the response body should be valid JSON for user
     And validate response headers for user
 
-  @negative
-  Scenario: TC_Users_20 - Get users with invalid URL returns 404
-    Given I set user endpoint with invalid id
-    When I send a GET request for user
-    Then the API should return status code 404 with status message "Not Found" for user
-    And the response time should be less than 2000 ms for user
-    And the response body should be valid JSON for user
-    And validate response headers for user
+@negative @defect @TC_Users_20
+Scenario: DEFECT - Get user with invalid ID should return 400 Bad Request
+  Given I set user endpoint with invalid id
+  When I send a GET request for user
+  Then the API should return status code 400 with status message "Bad Request" for user
+  And the response time should be less than 2000 ms for user
+  And the response body should be valid JSON for user
+  And validate response headers for user
 
   @negative 
-  Scenario: TC_Users_21 - Get users without API key - ReqRes allows unauthenticated GET
+  Scenario: TC_Users_21 - Get users without API key
     Given I set users list endpoint
     And I remove API key from header
     When I send a GET request for user
-    Then the API should return status code should be 401 Unauthorized for user
+    Then the API should return status code should be 200 for user
     And the response time should be less than 2000 ms for user
     And the response body should be valid JSON for user
     And validate response headers for user
@@ -135,7 +135,7 @@ Scenario: DEFECT - Create user with empty request body should return 400 but ret
     Given I set user endpoint with valid id
     And I set invalid API key in header for user
     When I send a GET request for user
-    Then the API should return status code should be handled as per API behavior for user
+    Then the API should return status code should be 200 for user
     And the response time should be less than 2000 ms for user
     And the response body should be valid JSON for user
     And validate response headers for user

@@ -83,7 +83,7 @@ public class Users_createget_stepdefinition extends Baseclass {
 
     @Given("I prepare empty user request body")
     public void prepareEmptyBody() {
-        requestBody = new HashMap<>();
+        requestBody = null;
     }
 
     @Given("I prepare user request body with only name {string}")
@@ -107,11 +107,20 @@ public class Users_createget_stepdefinition extends Baseclass {
                 .given()
                 .baseUri(ConfigReader.getBaseUrl())
                 .header("Content-Type", "application/json");
+
+        System.out.println("API KEY REMOVED");
+        System.out.println("BASE URL: " + ConfigReader.getBaseUrl());
     }
 
     @When("I send a POST request for user")
     public void sendPostRequest() {
-        response = request.body(requestBody).post(endpoint);
+
+        if (requestBody != null) {
+            response = request.body(requestBody).post(endpoint);
+        } else {
+            response = request.post(endpoint);
+        }
+
         printResponse();
     }
 
@@ -206,5 +215,5 @@ public class Users_createget_stepdefinition extends Baseclass {
         System.out.println("RESPONSE BODY:");
         System.out.println(response.asPrettyString());
     }
-    
+
 }
