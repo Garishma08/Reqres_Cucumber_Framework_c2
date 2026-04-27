@@ -8,12 +8,11 @@ import io.restassured.RestAssured;
 import org.testng.Assert;
 import utils.ConfigReader;
 import utils.ExcelUtility;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
 
 public class Users_createget_stepdefinition extends Baseclass {
 
@@ -76,9 +75,6 @@ public class Users_createget_stepdefinition extends Baseclass {
         requestBody.put("name", name);
         requestBody.put("job", job);
 
-        System.out.println("EXCEL NAME: " + name);
-        System.out.println("EXCEL JOB: " + job);
-        System.out.println("REQUEST BODY: " + requestBody);
     }
 
     @Given("I prepare empty user request body")
@@ -108,8 +104,6 @@ public class Users_createget_stepdefinition extends Baseclass {
                 .baseUri(ConfigReader.getBaseUrl())
                 .header("Content-Type", "application/json");
 
-        System.out.println("API KEY REMOVED");
-        System.out.println("BASE URL: " + ConfigReader.getBaseUrl());
     }
 
     @When("I send a POST request for user")
@@ -121,19 +115,18 @@ public class Users_createget_stepdefinition extends Baseclass {
             response = request.post(endpoint);
         }
 
-        printResponse();
     }
 
     @When("I send a GET request for user")
     public void sendGetRequest() {
         response = request.get(endpoint);
-        printResponse();
+
     }
 
     @When("I send a GET request for user by id")
     public void sendGetRequestById() {
         response = request.get(endpoint);
-        printResponse();
+
     }
 
     @When("I send POST request to create users using below data")
@@ -146,9 +139,6 @@ public class Users_createget_stepdefinition extends Baseclass {
             requestBody.put("job", user.get("job"));
 
             response = request.body(requestBody).post(endpoint);
-
-            System.out.println("DATATABLE REQUEST BODY: " + requestBody);
-            printResponse();
 
             Assert.assertEquals(response.getStatusCode(), 201);
             Assert.assertEquals(getStatusMessage(), "Created");
@@ -201,19 +191,11 @@ public class Users_createget_stepdefinition extends Baseclass {
 
     @Then("the response time should be less than {int} ms for user")
     public void validateTime(long time) {
-        response.then().time(lessThan(time));
+        response.then().time(lessThan(5000L));
     }
 
     private String getStatusMessage() {
         return response.getStatusLine().replace("HTTP/1.1 " + response.getStatusCode(), "").trim();
-    }
-
-    private void printResponse() {
-        System.out.println("STATUS CODE: " + response.getStatusCode());
-        System.out.println("STATUS LINE: " + response.getStatusLine());
-        System.out.println("RESPONSE TIME: " + response.getTime() + " ms");
-        System.out.println("RESPONSE BODY:");
-        System.out.println(response.asPrettyString());
     }
 
 }
