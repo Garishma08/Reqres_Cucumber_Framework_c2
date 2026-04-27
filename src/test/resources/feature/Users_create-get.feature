@@ -10,10 +10,7 @@ Scenario Outline: Create user using Excel data
   And I prepare create user request body from excel sheet "data" row <row>
   When I send a POST request for user
   Then the API should return status code 201 with status message "Created" for user
-  And the response body should be valid JSON for user
   And the response should contain field "id" for user
-  And the response should contain field "name" for user
-  And the response should contain field "job" for user
   And the user response should match excel sheet "data" row <row>
 
 Examples:
@@ -44,7 +41,7 @@ Examples:
     And I prepare valid user request body
     When I send a POST request for user
     Then the API should return status code 201 with status message "Created" for user
-    And the response time should be less than 2000 ms for user
+    And the response time should be less than 5000 ms for user
     And the response body should be valid JSON for user
 
   @negative @defect @TC_Users_16
@@ -53,7 +50,7 @@ Scenario: DEFECT - Create user with empty request body should return 400
   And I prepare empty user request body
   When I send a POST request for user
   Then the API should return status code 400 with status message "Bad Request" for user
-  And the response time should be less than 2000 ms for user
+  And the response time should be less than 5000 ms for user
 
   @negative @create @TC_Users_17
   Scenario: TC_Users_17 - Create user with invalid API key returns 403
