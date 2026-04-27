@@ -22,6 +22,7 @@ public class CollectionStep extends Baseclass {
     private String currentSlug;
     private String updateName;
     private String updateSlug;
+    private String projectid = ConfigReader.getProjectId().trim();
 
     @Given("Base Url is set")
     public void base_url_is_set() {
@@ -45,23 +46,24 @@ public class CollectionStep extends Baseclass {
     public void i_prepare_collection_payload_from_excel(String row) {
         int rowNum = Integer.parseInt(row);
 
-        String colName    = ExcelUtility.getCellData("data", rowNum, "col_name");
-        String colSlug    = ExcelUtility.getCellData("data", rowNum, "col_slug");
-        String projectId  = ExcelUtility.getCellData("data", rowNum, "project_id");
+        String colName = ExcelUtility.getCellData("data", rowNum, "col_name");
+        String colSlug = ExcelUtility.getCellData("data", rowNum, "col_slug");
+        String projectId = ExcelUtility.getCellData("data", rowNum, "project_id");
         String visibility = ExcelUtility.getCellData("data", rowNum, "visibility");
 
         currentSlug = colSlug;
 
         JSONObject body = new JSONObject();
-        body.put("name",       colName);
-        body.put("slug",       colSlug);
-        body.put("project_id", projectId);
+        body.put("name", colName);
+        body.put("slug", colSlug);
         body.put("visibility", visibility);
 
         request = RestAssured
                 .given()
+                .log().all()
                 .header("Content-Type", "application/json")
                 .header("x-api-key", ConfigReader.getApiKey())
+                .queryParam("project_id", projectId.replace(",", "").trim())
                 .body(body.toString());
 
         System.out.println("COLLECTION REQUEST BODY: " + body);
@@ -91,9 +93,9 @@ public class CollectionStep extends Baseclass {
                 "Create collection scenario must run before duplicate scenario");
 
         JSONObject body = new JSONObject();
-        body.put("name",       "Duplicate Collection");
-        body.put("slug",       savedSlug);
-        body.put("project_id", ConfigReader.getProjectId());
+        body.put("name", "Duplicate Collection");
+        body.put("slug", savedSlug);
+        body.put("project_id", projectid);
         body.put("visibility", "private");
 
         request = RestAssured
@@ -125,22 +127,22 @@ public class CollectionStep extends Baseclass {
         Map<String, String> data = rows.get(0);
 
         String nameValue = data.get("name");
-        String slug      = data.get("slug");
+        String slug = data.get("slug");
         String projectId = data.get("project_id");
-        String visibility= data.get("visibility");
+        String visibility = data.get("visibility");
 
         String body;
 
         if (nameValue.equalsIgnoreCase("null")) {
             body = "{\"name\":null"
-                 + ",\"slug\":\""       + slug       + "\""
-                 + ",\"project_id\":"   + projectId
-                 + ",\"visibility\":\"" + visibility + "\"}";
+                    + ",\"slug\":\"" + slug + "\""
+                    + ",\"project_id\":" + projectId
+                    + ",\"visibility\":\"" + visibility + "\"}";
         } else {
-            body = "{\"name\":\""       + nameValue  + "\""
-                 + ",\"slug\":\""       + slug       + "\""
-                 + ",\"project_id\":"   + projectId
-                 + ",\"visibility\":\"" + visibility + "\"}";
+            body = "{\"name\":\"" + nameValue + "\""
+                    + ",\"slug\":\"" + slug + "\""
+                    + ",\"project_id\":" + projectId
+                    + ",\"visibility\":\"" + visibility + "\"}";
         }
 
         request = RestAssured
@@ -151,7 +153,6 @@ public class CollectionStep extends Baseclass {
 
         System.out.println("INVALID DATATYPE REQUEST BODY: " + body);
     }
-
 
     @Given("I use saved collection slug")
     public void i_use_saved_collection_slug() {
@@ -224,7 +225,7 @@ public class CollectionStep extends Baseclass {
                         + currentSlug);
 
         if (response.getStatusCode() == 200) {
-            savedSlug   = response.jsonPath().getString("data.slug");
+            savedSlug = response.jsonPath().getString("data.slug");
             currentSlug = savedSlug;
         }
 
