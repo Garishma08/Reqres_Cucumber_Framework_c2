@@ -19,5 +19,6 @@ public class Baseclass {
                 .given()
                 .header("Content-Type", "application/json")
                 .header("x-api-key", ConfigReader.getApiKey());
+               
     }
 }
