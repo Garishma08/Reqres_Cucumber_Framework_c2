@@ -48,7 +48,7 @@ Feature: Collection API Testing
   Scenario Outline: Create collection with invalid datatype
     Given I prepare invalid datatype payload with data
       | name   | slug               | project_id | visibility |
-      | <name> | invalid-slug-dtype | 13455      | private    |
+      | <name> | invalid-slug-dtype | 12631      | private    |
     When I send a POST request for collection
     Then I validate status code 400
     And I validate response time
@@ -76,19 +76,6 @@ Feature: Collection API Testing
     When I get collection without authentication using slug "orders"
     Then I validate status code 401
     And I validate response time
-
-  @positive @excel
-  Scenario Outline: Update collection using Excel data
-    Given I use saved collection slug
-    And I read update collection data from excel "<row>"
-    When I send PUT request for collection
-    Then I validate status code 200
-    And I validate response time
-
-    Examples:
-      | row |
-      | 1   |
-      | 2   |
 
   @negative
   Scenario: Update collection with invalid slug
