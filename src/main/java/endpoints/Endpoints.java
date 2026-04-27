@@ -14,4 +14,8 @@ public class Endpoints {
     public static final String CREATE_COLLECTION = "/api/collections";
     public static final String GET_COLLECTION_BY_SLUG = "/api/collections/";
     public static final String UPDATE_COLLECTION = "/api/collections/";
+
+    public static final String UPDATE_USER = "/api/users/";
+    public static final String PATCH_USER = "/api/users/";
+    public static final String DELETE_USER = "/api/users/";
 }
