@@ -1,11 +1,8 @@
 @record_module
-Feature: Record Management in API
+Feature: Record Module
 
   Background:
-    Given the record management API is initialized
-
-
-  # ================= TS_15 - CREATE =================
+    Given the API is initialized
 
   Scenario: TC_Record_01 Create Record
     Given I set create record endpoint from excel sheet "data" row <row>
@@ -34,8 +31,7 @@ Feature: Record Management in API
     Then the API should return status code 400 for record
     And the response should contain error and message
 
-	 @negative @create
-	Scenario Outline: TC_Record_04 Create Record without slug
+	Scenario: TC_Record_04 Create Record without slug
 	  Given I set create record endpoint with invalid slug
 	  And I prepare record request body from excel sheet "data" row <row>
 	  When I send a POST request for record
@@ -46,7 +42,6 @@ Feature: Record Management in API
 	  | row |
 	  | 1   |
 	  | 2   |
-  # ================= DATATABLE =================
 
   Scenario: TC_Record_1B Create record using datatable
     Given I set create record endpoint
@@ -55,8 +50,6 @@ Feature: Record Management in API
       | Steven  | 100   |
       | Aiden   | 200   |
     Then the API should return status code 201 for record
-
-  # ================= TS_16 - GET ALL =================
 
   Scenario: TC_Record_05 Get All Records
     Given I set get records endpoint
@@ -75,9 +68,6 @@ Feature: Record Management in API
     When I send a GET request for records
     Then the API should return status code 404 for record
     And the response should contain error and message
-
-
-  # ================= TS_17 - GET SINGLE =================
 
   Scenario: TC_Record_08 Get a single Record
     Given I create a record and store its id
@@ -106,10 +96,7 @@ Feature: Record Management in API
     Then the API should return status code 404 for record
     And the response should contain error and message
 
-
-  # ================= TS_18 - UPDATE =================
-
-  Scenario Outline: TC_Record_12 Update Record
+  Scenario: TC_Record_12 Update Record
     Given I create a record and store its id
     And I set update record endpoint with valid id
     And I prepare update record request body from excel sheet "data" row <row>
@@ -135,9 +122,6 @@ Feature: Record Management in API
     Then the API should return status code 404 for record
     And the response should contain error and message
 
-
-  # ================= TS_19 - DELETE =================
-
   Scenario: TC_Record_15 Delete a Record
     Given I create a record and store its id
     And I set delete record endpoint with valid id
@@ -156,7 +140,7 @@ Feature: Record Management in API
     Then the API should return status code 404 for record
     And the response should contain error and message
 
-Scenario Outline: Delete collection successfully
+Scenario: Delete collection successfully
   Given I set delete collection endpoint from excel sheet "data" row <row>
   When I send a DELETE request for collection
   Then the API should return status code 204 for collection
