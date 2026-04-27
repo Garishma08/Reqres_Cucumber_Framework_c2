@@ -18,17 +18,16 @@ public class RecordStepDefinition extends Baseclass {
     private String currentSlug;
     private String currentRecordId;
     private String endpoint;
-    private String emptySlug=" ";
-    private String invalidSlug="@#$%";
-    private String invalidRecordId="@#$%";
-    private String emptyRecordId=" ";
-    
+    private String emptySlug = " ";
+    private String invalidSlug = "@#$%";
+    private String invalidRecordId = "@#$%";
+    private String emptyRecordId = " ";
+
     private void ensureRecordId() {
         if (currentRecordId == null) {
             create_and_store_id();
         }
     }
-
 
     @Given("the API is initialized")
     public void init_api() {
@@ -41,11 +40,9 @@ public class RecordStepDefinition extends Baseclass {
                 .header("x-api-key", ConfigReader.getApiKey());
     }
 
-
     private void loadSlug() {
         currentSlug = ExcelUtility.getCellData("data", 1, "col_slug");
     }
-
 
     @Given("I set create record endpoint from excel sheet {string} row {int}")
     public void set_create_endpoint_excel(String sheet, Integer row) {
@@ -98,7 +95,6 @@ public class RecordStepDefinition extends Baseclass {
         printResponse();
     }
 
-
     @Given("I set get records endpoint")
     public void set_get_all() {
         loadSlug();
@@ -120,7 +116,6 @@ public class RecordStepDefinition extends Baseclass {
         response = request.get(endpoint);
         printResponse();
     }
-
 
     @Given("I create a record and store its id")
     public void create_and_store_id() {
@@ -180,7 +175,6 @@ public class RecordStepDefinition extends Baseclass {
         printResponse();
     }
 
-
     @Given("I set update record endpoint from excel sheet {string} row {int}")
     public void set_update_excel(String sheet, Integer row) {
 
@@ -236,7 +230,7 @@ public class RecordStepDefinition extends Baseclass {
     @Given("I set update record endpoint with invalid slug")
     public void update_invalid_slug() {
 
-        ensureRecordId();   
+        ensureRecordId();
 
         endpoint = Endpoints.UPDATE_RECORD
                 .replace("{slug}", invalidSlug)
@@ -308,15 +302,15 @@ public class RecordStepDefinition extends Baseclass {
         response = request.delete(endpoint);
         printResponse();
     }
-    
+
     @Given("I set delete collection endpoint from excel sheet {string} row {int}")
     public void set_delete_collection(String sheet, Integer row) {
 
         String slug = ExcelUtility.getCellData(sheet, row, "col_slug");
 
-        endpoint = Endpoints.DELETE_COLLECTION+ slug;
+        endpoint = Endpoints.DELETE_COLLECTION + slug;
     }
-    
+
     @When("I send a DELETE request for collection")
     public void send_delete_collection() {
         response = request.delete(endpoint);
@@ -344,7 +338,6 @@ public class RecordStepDefinition extends Baseclass {
         }
     }
 
-
     @Then("the API should return status code {int} for record")
     public void validate_status(int code) {
         response.then().statusCode(code);
@@ -371,7 +364,7 @@ public class RecordStepDefinition extends Baseclass {
         response.then().body("error", Matchers.notNullValue());
         response.then().body("message", Matchers.notNullValue());
     }
-    
+
     @Then("the API should return status code {int} for collection")
     public void validate_collection_status(int code) {
         response.then().statusCode(code);

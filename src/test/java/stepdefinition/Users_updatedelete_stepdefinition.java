@@ -74,7 +74,7 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
     @Given("I prepare update user request body from excel sheet {string} row {int}")
     public void prepare_body_from_excel(String sheet, int row) {
         String name = ExcelUtility.getCellData(sheet, row, "name");
-        String job  = ExcelUtility.getCellData(sheet, row, "job");
+        String job = ExcelUtility.getCellData(sheet, row, "job");
 
         requestBody = "{ \"name\": \"" + name + "\", \"job\": \"" + job + "\" }";
         request.body(requestBody);
@@ -139,8 +139,8 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
 
         for (Map<String, String> row : data) {
             String userId = row.get("userId");
-            String name   = row.get("name");
-            String job    = row.get("job");
+            String name = row.get("name");
+            String job = row.get("job");
 
             String body = "{ \"name\": \"" + name + "\", \"job\": \"" + job + "\" }";
 
@@ -185,10 +185,10 @@ public class Users_updatedelete_stepdefinition extends Baseclass {
         Assert.assertTrue(response.getBody().asString().contains(field));
     }
 
-    @Then("the response should contain field {string}")
-    public void validate_field_generic(String field) {
-        Assert.assertTrue(response.getBody().asString().contains(field));
-    }
+    // @Then("the response should contain field {string}")
+    // public void validate_field_generic(String field) {
+    // Assert.assertTrue(response.getBody().asString().contains(field));
+    // }
 
     @Then("validate response headers for update user")
     public void validate_headers_update() {
