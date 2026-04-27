@@ -100,4 +100,4 @@ Feature: Collection API Testing
   Scenario: Update collection without authentication
     When I update collection without authentication using slug "orders"
     Then I validate status code 401
-    And I validate response times
+    And I validate response time
